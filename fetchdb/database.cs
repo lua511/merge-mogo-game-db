@@ -40,6 +40,7 @@ namespace fetchdb
             builder.Server = ip;
             builder.UserID = user;
             builder.Password = password;
+            builder.CharacterSet = "utf8";
             connection_string = builder.ToString();
             connection = new MySql.Data.MySqlClient.MySqlConnection(connection_string);
             try

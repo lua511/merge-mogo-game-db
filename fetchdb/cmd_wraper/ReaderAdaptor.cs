@@ -75,6 +75,32 @@ namespace fetchdb.cmd_wraper
             }
         }
     }
+
+    class KeyKeyStringReaderAdaptor
+    {
+        private Dictionary<UInt64, KeyValuePair<UInt64, string>> dst;
+        public Dictionary<UInt64,KeyValuePair<UInt64,string>>   AllValues
+        {
+            get
+            {
+                return dst;
+            }
+        }
+        public KeyKeyStringReaderAdaptor()
+        {
+            dst = new Dictionary<ulong, KeyValuePair<ulong, string>>();
+        }
+        public void Load(MySql.Data.MySqlClient.MySqlDataReader rds)
+        {
+            while(rds.Read())
+            {
+                var key = rds.GetUInt64(0);
+                var left = rds.GetUInt64(1);
+                var right = rds.GetString(2);
+                dst.Add(key, new KeyValuePair<ulong, string>(left, right));
+            }
+        }
+    }
 }
 
 /*

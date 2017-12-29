@@ -96,6 +96,43 @@ namespace fetchdb
             }
             // create tables
             create_avatar_from_schema();
+            // load new avatar dbid
+            load_avatar_newid(cd);
+            // update cache file
+            cd.Save(avatars_file_name);
+
+            // rename is need
+            if (!cd.is_avatar_newname_allfilled())
+            {
+                var rename_op = new op_wraper.rename_avatar(cd);
+                var renamed = rename_op.process(wspace);
+                if (renamed.Count > 0)
+                {
+                    Console.WriteLine("renamed " + renamed.Count.ToString() + " avatars,skip write to db?(only full lower case 'yes' means yes/y[no]");
+                    opt_str = Console.ReadLine();
+                    if(opt_str.Trim() == "yes")
+                    {
+                        // do nothing,to skip
+                    }
+                    else
+                    {
+                        foreach(var kvp in renamed)
+                        {
+                            new avatar_cmd(database.Instance).rename_avatar(kvp.Key,kvp.Value,wspace.TargetDb);
+                        }
+                        // fill all new names
+                        rename_op.fill_all_newnames(wspace, renamed);
+                        // all write,save to file
+                        cd.Save(avatars_file_name);
+                        Console.WriteLine("saved cachedata to local disk");
+                    }
+                }
+            }
+            if (!cd.is_avatar_newname_allfilled())
+            {
+                var einfo = "fatel error : " + "not all avatar newname filled";
+                throw new Exception(einfo);
+            }
         }
 
         private void drop_exist_database()
@@ -121,15 +158,11 @@ namespace fetchdb
             var all_tables = tblc.show_tables(wspace.TargetDb);
             if(all_tables.Contains(table_name))
             {
-                Console.WriteLine("avatar table exist,keep it?(only full lower case 'yes' means yes/y[no]");
+                Console.WriteLine("avatar table exist,drop it?(only full lower case 'yes' means yes/y[no]");
                 var opt = Console.ReadLine();
                 if(opt.Trim() == "yes")
                 {
-                    // keep it
-                }
-                else
-                {
-                    tblc.drop_table(wspace.TargetDb,table_name);
+                    tblc.drop_table(wspace.TargetDb, table_name);
                 }
             }
 
@@ -174,6 +207,23 @@ namespace fetchdb
             {
                 var init_sql = string.Format(init_sql_schema, wspace.TargetDb, table_name, column_strs.ToString(), db);
                 new database_cmd(database.Instance).execute_sql(init_sql);
+            }
+        }
+
+        public void load_avatar_newid(cachedata cd)
+        {
+            if (!cd.is_avatar_newid_allloaded())
+            {
+                var data = new table_cmd(database.Instance).load_key_leftright(wspace.TargetDb, "tbl_Avatar");
+                foreach(var kvp in data)
+                {
+                    cd.avatar_newid(kvp.Key, kvp.Value.Key, kvp.Value.Value);
+                }
+            }
+
+            if (!cd.is_avatar_newid_allloaded())
+            {
+                Console.WriteLine("fatel error : miss avatar new dbid,drop all may a good choise");
             }
         }
     }

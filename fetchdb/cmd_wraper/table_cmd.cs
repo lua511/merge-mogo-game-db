@@ -75,6 +75,14 @@ namespace fetchdb.cmd_wraper
             current_db.execute_read(cmd_text, ocs.Load);
             return ocs.KeyValues;
         }
+        // avatar special,todo: refactor
+        public Dictionary<UInt64,KeyValuePair<UInt64,string>>   load_key_leftright(string database_name,string table_name)
+        {
+            var ocs = new KeyKeyStringReaderAdaptor();
+            var cmd_text = @"select id,old_id,old_server from " + database_name + @"." + table_name + @";";
+            current_db.execute_read(cmd_text, ocs.Load);
+            return ocs.AllValues;
+        }
     }
 }
 

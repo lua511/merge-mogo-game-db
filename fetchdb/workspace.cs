@@ -26,6 +26,17 @@ namespace fetchdb
         {
             get;set;
         }
+        public int  GetSourceDbIndex(string source_db)
+        {
+            for(int i = 0;i < SourceDbs.Count; ++i)
+            {
+                if(SourceDbs[i] == source_db)
+                {
+                    return i + 1;
+                }
+            }
+            return SourceDbs.Count + 1;
+        }
         public string SchemaDatabase
         {
             get

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using fetchdb.data;
 
 namespace fetchdb
 {
@@ -22,25 +23,15 @@ namespace fetchdb
         {
             get;set;
         }
-
-        [Serializable]
-        public class AvatarInfo
-        {
-            public string old_name { get; set; }
-            public string new_name { get; set; }
-            public UInt64 old_dbid { get; set; }
-            public UInt64 new_dbid { get; set; }
-            public string serverid { get; set; }
-        }
-        [Serializable]
-        public class AccountInfo
-        {
-            public string old_name { get; set; }
-            public UInt64 old_dbid { get; set; }
-            public string serverid { get; set; }
-        }
         private List<AvatarInfo> all_avatars_info = new List<AvatarInfo>();
         private List<AccountInfo> all_account_info = new List<AccountInfo>();
+
+        // carefully use it, todo: refactor, should have some access limit.
+        public List<AvatarInfo> All_Avatars
+        {
+            get { return all_avatars_info; }
+        }
+
 
         public void store_avatar(string name,UInt64 dbid,string server_db)
         {
@@ -50,6 +41,44 @@ namespace fetchdb
             ai.serverid = server_db;
             all_avatars_info.Add(ai);
         }
+
+        public void avatar_newid(UInt64 new_dbid,UInt64 old_dbid,string server_db)
+        {
+            foreach(var v in all_avatars_info)
+            {
+                if(v.old_dbid == old_dbid && v.serverid == server_db)
+                {
+                    v.new_dbid = new_dbid;
+                    break;
+                }
+            }
+        }
+
+        public  bool is_avatar_newid_allloaded()
+        {
+            for(int i =0; i< 10 && i < all_avatars_info.Count; ++i)
+            {
+                var ai = all_avatars_info[i];
+                if(ai.new_dbid < int.MaxValue)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public bool is_avatar_newname_allfilled()
+        {
+            for (int i = 0; i < 10 && i < all_avatars_info.Count; ++i)
+            {
+                var ai = all_avatars_info[i];
+                if (string.IsNullOrEmpty(ai.new_name))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public void store_account(string name,UInt64 dbid,string server_db)
         {
             all_account_info.Add(new AccountInfo() { old_name = name,old_dbid = dbid,serverid = server_db });
