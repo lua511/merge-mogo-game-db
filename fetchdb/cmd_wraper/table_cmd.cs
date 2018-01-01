@@ -23,6 +23,9 @@ namespace fetchdb.cmd_wraper
     //    6. alter table
     //    7. load records
     //    8. update record
+    //    9. delete record
+    // todo:
+    //    move cmd operation to nl layer( og layer may ok,but not here )
     class table_cmd
     {
         private data.database current_conn;
@@ -118,6 +121,15 @@ namespace fetchdb.cmd_wraper
             }
             var cmd = current_conn.prepare_write_cmd(txt);
             writer.update(cmd);
+            current_conn.execute_nonquery(cmd);
+        }
+
+        // 9. delete record
+        public void delete_record(cpe_wraper.idelete_adaptor deletor)
+        {
+            var text = safeformat.format(@"delete from {0}.{1} where {2}", db_name, table_name, deletor.sql_where);
+            var cmd = current_conn.prepare_write_cmd(text);
+            deletor.update(cmd);
             current_conn.execute_nonquery(cmd);
         }
     }

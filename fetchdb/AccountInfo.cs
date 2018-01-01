@@ -23,6 +23,20 @@ namespace fetchdb
         public string serverid { get; set; }
         public string old_avatarinfo { get; set; }
         public string new_avatarinfo { get; set; }
+
+        public AccountInfo deep_copy()
+        {
+            var p = new AccountInfo()
+            {
+                new_dbid = new_dbid,
+                old_name = old_name,
+                old_dbid = old_dbid,
+                serverid = serverid,
+                old_avatarinfo = old_avatarinfo,
+                new_avatarinfo = new_avatarinfo,
+            };
+            return p;
+        }
     }
 }
 

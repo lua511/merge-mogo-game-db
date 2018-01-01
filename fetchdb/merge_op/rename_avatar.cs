@@ -12,25 +12,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace fetchdb.op_wraper
+namespace fetchdb.merge_op
 {
     class rename_avatar
     {
-        private static readonly string file_data_name = "rempaed_avatar.dat";
+        private static readonly string file_data_name = "remaped_avatar.dat";
         private static readonly data.tbname avatar_table_name = global_config.avatar_table_name;
         private data.database curr_conn;
         private cachedata cached;
 
-        private List<string> old_names;
-        private List<string> conficted_names;
+        private HashSet<string> old_names;
+        private HashSet<string> conficted_names;
+        private Dictionary<string, List<AvatarInfo>> old_name_to_avatars;
         private Dictionary<UInt64, string> renamed_names;
 
         public rename_avatar(data.database conn,cachedata cd)
         {
             curr_conn = conn;
             cached = cd;
-            old_names = new List<string>();
-            conficted_names = new List<string>();
+            old_names = new HashSet<string>();
+            conficted_names = new HashSet<string>();
+            old_name_to_avatars = new Dictionary<string, List<AvatarInfo>>();
             renamed_names = new Dictionary<ulong, string>();
         }
 
@@ -55,15 +57,11 @@ namespace fetchdb.op_wraper
 
         private List<AvatarInfo> GetAvatarsInfoByOldName(string old_name)
         {
-            var dst = new List<AvatarInfo>();
-            foreach(var v in cached.All_Avatars)
+            if (old_name_to_avatars.ContainsKey(old_name))
             {
-                if(v.old_name == old_name)
-                {
-                    dst.Add(v);
-                }
+                return old_name_to_avatars[old_name];
             }
-            return dst;
+            throw new Exception("not valid name");
         }
 
         // how to rename
@@ -75,6 +73,7 @@ namespace fetchdb.op_wraper
             old_names.Clear();
             conficted_names.Clear();
             renamed_names.Clear();
+            old_name_to_avatars.Clear();
 
             var all_avatar = cached.All_Avatars;
 
@@ -89,6 +88,11 @@ namespace fetchdb.op_wraper
                 {
                     conficted_names.Add(v.old_name);
                 }
+                if(!old_name_to_avatars.ContainsKey(v.old_name))
+                {
+                    old_name_to_avatars.Add(v.old_name, new List<AvatarInfo>());
+                }
+                old_name_to_avatars[v.old_name].Add(v);
             }
             // rename
             foreach(var conficted in conficted_names)
@@ -101,10 +105,10 @@ namespace fetchdb.op_wraper
                     if(!old_names.Contains(try_new_name))
                     {
                         old_names.Add(try_new_name);
-                        renamed_names.Add(ava.new_dbid, ava.new_name);
+                        renamed_names.Add(ava.new_dbid, try_new_name);
                         bRenamed = true;
                     }
-                    if(string.IsNullOrEmpty(ava.new_name))
+                    if(!bRenamed)
                     {
                         int cur_idx = ws.SourceDbs.Count + 1;
                         for(;cur_idx < 100; ++cur_idx)
@@ -113,7 +117,7 @@ namespace fetchdb.op_wraper
                             if(!old_names.Contains(try_new_name))
                             {
                                 old_names.Add(try_new_name);
-                                renamed_names.Add(ava.new_dbid, ava.new_name);
+                                renamed_names.Add(ava.new_dbid, try_new_name);
                                 bRenamed = true;
                                 break;
                             }
@@ -125,6 +129,7 @@ namespace fetchdb.op_wraper
                     }
                 }
             }
+            old_names.Clear();
             // apply new name
             var target_avatars = new List<AvatarInfo>();
             foreach (var kvp in cached.All_Avatars)
@@ -139,18 +144,48 @@ namespace fetchdb.op_wraper
                 {
                     p.new_name = p.old_name;
                 }
+                target_avatars.Add(p);
+
+                if(old_names.Contains(p.new_name))
+                {
+                    throw new Exception("rename failed");
+                }
+                else
+                {
+                    old_names.Add(p.new_name);
+                }
             }
             cached.Remaped_Avatars = target_avatars;
 
+            var watcher = new System.Diagnostics.Stopwatch();
+            watcher.Start();
             // save to db
-            foreach(var kvp in target_avatars)
+            int page_count = 1000;
+            var avatars_for_save = new List<AvatarInfo>();
+            Action<List<AvatarInfo>> action = (o) => {
+                var anw = new cog_wraper.avatar_name_batch_writer(avatars_for_save);
+                new cog_wraper.ogtable_writer<cog_wraper.avatar_name_batch_writer>(anw, curr_conn, ws.TargetDb, avatar_table_name).save_summary();
+            };
+
+            foreach (var kvp in target_avatars)
             {
                 if(renamed_names.ContainsKey(kvp.new_dbid))
                 {
-                    var anw = new cog_wraper.avatar_name_writer(kvp);
-                    new cog_wraper.ogtable_writer<cog_wraper.avatar_name_writer>(anw, curr_conn, ws.TargetDb, avatar_table_name).save_summary();
+                    avatars_for_save.Add(kvp);
+                    if (avatars_for_save.Count >= page_count)
+                    {
+                        action(avatars_for_save);
+                        avatars_for_save.Clear();
+                    }
                 }
             }
+            if(avatars_for_save.Count > 0)
+            {
+                action(avatars_for_save);
+                avatars_for_save.Clear();
+            }
+            watcher.Stop();
+            Console.WriteLine("save new names : " + watcher.ElapsedMilliseconds / 1000);
 
             // save to disk
             new cpe_wraper.serialize_op<List<AvatarInfo>>().save(file_data_name, cached.Remaped_Avatars);

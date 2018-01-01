@@ -40,7 +40,10 @@ namespace fetchdb
             new merge_op.avatar_tblop(data.database.Instance, cd).process(wspace);
             // process account table
             new merge_op.account_tblop(data.database.Instance, cd).process(wspace);
-
+            // rename avatar
+            new merge_op.rename_avatar(data.database.Instance, cd).process(wspace);
+            // remap account
+            new merge_op.remap_account(data.database.Instance, cd).process(wspace);
         }
     }
 }

@@ -55,12 +55,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="cachedata.cs" />
+    <Compile Include="cog_wraper\account_avatarsinfo_batch_writer.cs" />
+    <Compile Include="cog_wraper\account_avatarsinfo_writer.cs" />
+    <Compile Include="cog_wraper\account_record_deletor.cs" />
+    <Compile Include="cog_wraper\avatar_name_batch_writer.cs" />
     <Compile Include="cog_wraper\avatar_name_reader.cs" />
     <Compile Include="cog_wraper\avatar_name_writer.cs" />
+    <Compile Include="cog_wraper\ogtable_deletor.cs" />
     <Compile Include="cog_wraper\ogtable_writer.cs" />
     <Compile Include="cpe_wraper\blobstring_loader.cs" />
     <Compile Include="cmd_wraper\connection_cmd.cs" />
     <Compile Include="cmd_wraper\database_cmd.cs" />
+    <Compile Include="cpe_wraper\idelete_adaptor.cs" />
     <Compile Include="cpe_wraper\iread_adaptor.cs" />
     <Compile Include="cnl_wraper\nltable_cmd.cs" />
     <Compile Include="cpe_wraper\iwrite_adaptor.cs" />
@@ -79,9 +85,9 @@
     <Compile Include="merge_op\account_tblop.cs" />
     <Compile Include="merge_op\avatar_tblop.cs" />
     <Compile Include="cpe_wraper\serialize_op.cs" />
+    <Compile Include="merge_op\remap_account.cs" />
     <Compile Include="merge_op\target_dbop.cs" />
-    <Compile Include="op_wraper\remap_account.cs" />
-    <Compile Include="op_wraper\rename_avatar.cs" />
+    <Compile Include="merge_op\rename_avatar.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="safeformat.cs" />

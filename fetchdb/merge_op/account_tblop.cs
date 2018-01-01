@@ -74,7 +74,20 @@ namespace fetchdb.merge_op
             var merged_count = new cmd_wraper.table_cmd(conn, account_table_name, wspace.TargetDb).get_record_count();
             if(merged_count != profile.All_Account.Count)
             {
-                throw new Exception("post_check failed,account table");
+                // may, we have deleted some accounts
+                var accounts = new HashSet<string>();
+                foreach(var v in profile.All_Account)
+                {
+                    if(accounts.Contains(v.old_name))
+                    {
+                        continue;
+                    }
+                    accounts.Add(v.old_name);
+                }
+                if (accounts.Count != merged_count)
+                {
+                    throw new Exception("post_check failed,account table");
+                }
             }
         }
     }
