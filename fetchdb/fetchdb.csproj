@@ -55,18 +55,37 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="cachedata.cs" />
-    <Compile Include="cmd_wraper\avatar_cmd.cs" />
+    <Compile Include="cog_wraper\avatar_name_reader.cs" />
+    <Compile Include="cog_wraper\avatar_name_writer.cs" />
+    <Compile Include="cog_wraper\ogtable_writer.cs" />
+    <Compile Include="cpe_wraper\blobstring_loader.cs" />
+    <Compile Include="cmd_wraper\connection_cmd.cs" />
     <Compile Include="cmd_wraper\database_cmd.cs" />
-    <Compile Include="cmd_wraper\ReaderAdaptor.cs" />
+    <Compile Include="cpe_wraper\iread_adaptor.cs" />
+    <Compile Include="cnl_wraper\nltable_cmd.cs" />
+    <Compile Include="cpe_wraper\iwrite_adaptor.cs" />
+    <Compile Include="cpe_wraper\ReaderAdaptor.cs" />
     <Compile Include="cmd_wraper\table_cmd.cs" />
-    <Compile Include="database.cs" />
-    <Compile Include="data\AccountInfo.cs" />
-    <Compile Include="data\AvatarInfo.cs" />
+    <Compile Include="cog_wraper\account_summary_reader.cs" />
+    <Compile Include="cog_wraper\avatar_summary_reader.cs" />
+    <Compile Include="cog_wraper\ogtable_reader.cs" />
+    <Compile Include="data\database.cs" />
+    <Compile Include="AccountInfo.cs" />
+    <Compile Include="AvatarInfo.cs" />
+    <Compile Include="data\dbname.cs" />
+    <Compile Include="data\tbname.cs" />
     <Compile Include="global_config.cs" />
     <Compile Include="merge.cs" />
+    <Compile Include="merge_op\account_tblop.cs" />
+    <Compile Include="merge_op\avatar_tblop.cs" />
+    <Compile Include="cpe_wraper\serialize_op.cs" />
+    <Compile Include="merge_op\target_dbop.cs" />
+    <Compile Include="op_wraper\remap_account.cs" />
     <Compile Include="op_wraper\rename_avatar.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="safeformat.cs" />
+    <Compile Include="scriptdata\AvatarParser.cs" />
     <Compile Include="workspace.cs" />
   </ItemGroup>
   <ItemGroup>

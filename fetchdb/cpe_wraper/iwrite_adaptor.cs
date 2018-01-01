@@ -12,13 +12,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace fetchdb
+namespace fetchdb.cpe_wraper
 {
-    class global_config
+    interface iwrite_adaptor
     {
-        public static int MYSQL_EXCUTE_MAX_TIMEOUT_SECOND = 300;
-        public static readonly data.tbname avatar_table_name = new data.tbname(@"tbl_Avatar");
-        public static readonly data.tbname account_table_name = new data.tbname(@"tbl_Account");
+        string sql_set { get; }
+        string sql_where { get; }
+        void update(MySql.Data.MySqlClient.MySqlCommand cmd);
     }
 }
 

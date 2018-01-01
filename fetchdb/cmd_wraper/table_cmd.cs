@@ -14,78 +14,115 @@ using System.Threading.Tasks;
 
 namespace fetchdb.cmd_wraper
 {
+    // methods:
+    //    1. exists
+    //    2. show create table
+    //    3. drop table & safe drop table
+    //    4. get table size ( element count )
+    //    5. create table ( will only be used by cnl wrappers )
+    //    6. alter table
+    //    7. load records
+    //    8. update record
     class table_cmd
     {
-        private database current_db;
-        public table_cmd(database db)
+        private data.database current_conn;
+        private string db_name;
+        private string table_name;
+        public table_cmd(data.database db,data.tbname table_name,data.dbname db_name)
         {
-            current_db = db;
+            current_conn = db;
+            this.table_name = table_name.table_name;
+            this.db_name = db_name.database_name;
         }
-
-        public List<string> show_tables(string database_name)
+        // 1. exists
+        public bool exists()
         {
-            var ocs = new StringReaderAdaptor();
-            current_db.execute_read(@"show tables in " + database_name, ocs.Load);
-
-            return ocs.Values;
+            var tables = new database_cmd(current_conn,new data.dbname(db_name)).show_tables();
+            return tables.Contains(table_name);
         }
-        public string show_createtable(string database_name,string table_name)
+        // 2. show create table
+        public string show_createtable()
         {
-            var ocs = new StringReaderAdaptor(1);
-            current_db.execute_read(@"use " + database_name + @";" + @"show create table " + table_name,ocs.Load);
+            var ocs = new cpe_wraper.StringReaderAdaptor(1,"","");
+            var cmd_text = safeformat.format(@"use {0};show create table {1}", db_name, table_name);
+            var cmd = current_conn.prepare_read_cmd(cmd_text);
+            current_conn.execute_read(cmd,ocs.load);
             return ocs.Values.First();
         }
-        public void drop_table(string database_name, string table_name)
+        // 3. drop table & safe drop table
+        public void drop_table(bool bSafe)
         {
-            var cmd_text = @"use " + database_name + @";" + @"drop table " + table_name;
-            current_db.execute_nonquery(cmd_text);
+            if(bSafe && !exists())
+            {
+                return;
+            }
+
+            var cmd_text = safeformat.format(@"use {0};drop table {1}", db_name, table_name);
+            var cmd = current_conn.prepare_write_cmd(cmd_text);
+            current_conn.execute_nonquery(cmd);
+        }
+        // 4.  get table size ( record count)
+        public int get_record_count()
+        {
+            var ira = new cpe_wraper.IntReaderAdaptor(0,"","");
+            var sql = safeformat.format(@"select count(1) from {0}.{1}", db_name, table_name);
+            var cmd = current_conn.prepare_read_cmd(sql);
+            current_conn.execute_read(cmd, ira.load);
+            return ira.Values.First();
         }
 
-        public void create_table(string schema_str,string database_name)
+        // 5.  create table (todo: use raw sql_cmd as less)
+        public void create_table(string sql_text)
         {
-            current_db.execute_nonquery(@"use " + database_name + ";" + schema_str);
+            var txt = safeformat.format(@"use {0};{1}", db_name, sql_text);
+            var cmd = current_conn.prepare_write_cmd(txt);
+            current_conn.execute_nonquery(cmd);
         }
 
-        // copy table ( from show_create_table str to new db)
-        public void copy_create_table_avatarlike(string schema_str,string database_name)
+        // 6.  alter table ( thinking: more functions like add index / add column ...)
+        public void alter_table(string sql_text)
         {
-            var tablename_hint = System.Text.RegularExpressions.Regex.Match(schema_str, @"CREATE TABLE\s\`[a-zA-Z_]+\`").Value;
-            var table_name = tablename_hint.Split('`')[1];
-            // reset the auto increate id
-            var auto_inc_pattern = @"AUTO_INCREMENT\=[\d]+\s";
-            var new_inc_pattern = @"AUTO_INCREMENT=" + UInt32.MaxValue.ToString() + @" ";
-            schema_str = System.Text.RegularExpressions.Regex.Replace(schema_str, auto_inc_pattern, new_inc_pattern);
-            // unique key to index
-            schema_str = schema_str.Replace("UNIQUE KEY", "INDEX");
-
-            // create table
-            create_table(schema_str,database_name);
-            // alter table add serverid/oldid
-            var alter_sql = @"use " + database_name + @";" + @"ALTER TABLE " + table_name + @" ADD COLUMN old_server varchar(255) COLLATE utf8_bin DEFAULT NULL,ADD COLUMN old_id bigint(20) NOT NULL";
-            current_db.execute_nonquery(alter_sql);
-            var alter_sql_key = @"use " + database_name + @";" + @"ALTER TABLE " + table_name + @" ADD INDEX (old_server),ADD INDEX (old_id)";
-            current_db.execute_nonquery(alter_sql_key);
+            var txt = safeformat.format(@"use {0}; ALTER TABLE {1} {2}", db_name, table_name, sql_text);
+            var cmd = current_conn.prepare_write_cmd(txt);
+            current_conn.execute_nonquery(cmd);
         }
 
-        // the table must have key(named id) value (named name) cols
-        public Dictionary<UInt64,string>    load_key_name(string database_name,string table_name)
+        // 7. load records
+        public void load_records(cpe_wraper.iread_adaptor reader)
         {
-            var ocs = new KeyStringReaderAdaptor();
-            var cmd_text = @"select id,sm_name from " + database_name + @"." + table_name + @";";
-            current_db.execute_read(cmd_text, ocs.Load);
-            return ocs.KeyValues;
+            var txt = "";
+            if(string.IsNullOrEmpty(reader.sql_where))
+            {
+                txt = safeformat.format(@"select {0} from {1}.{2}",reader.sql_select,db_name,table_name);
+            }
+            else
+            {
+                txt = safeformat.format(@"select {0} from {1}.{2} where {3}", reader.sql_select, db_name, table_name, reader.sql_where);
+            }
+            var cmd = current_conn.prepare_read_cmd(txt);
+            reader.update(cmd);
+            current_conn.execute_read(cmd, reader.load);
         }
-        // avatar special,todo: refactor
-        public Dictionary<UInt64,KeyValuePair<UInt64,string>>   load_key_leftright(string database_name,string table_name)
+
+        // 8. update record
+        public void update_record(cpe_wraper.iwrite_adaptor writer)
         {
-            var ocs = new KeyKeyStringReaderAdaptor();
-            var cmd_text = @"select id,old_id,old_server from " + database_name + @"." + table_name + @";";
-            current_db.execute_read(cmd_text, ocs.Load);
-            return ocs.AllValues;
+            var txt = "";
+            if (string.IsNullOrEmpty(writer.sql_where))
+            {
+                txt = safeformat.format(@"update {0}.{1} set {2}", db_name, table_name, writer.sql_set);
+            }
+            else
+            {
+                txt = safeformat.format(@"update {0}.{1} set {2} where {3}", db_name, table_name, writer.sql_set,writer.sql_where);
+            }
+            var cmd = current_conn.prepare_write_cmd(txt);
+            writer.update(cmd);
+            current_conn.execute_nonquery(cmd);
         }
     }
 }
 
 /*
- * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0
+ * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0 & .NET Framework 4.6.1
  */

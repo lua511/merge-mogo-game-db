@@ -18,15 +18,20 @@ namespace fetchdb
     {
         static void Main(string[] args)
         {
-            var db = new database();
+            var db = new data.database();
             try
             {
                 db.startup("192.168.1.8", "root", "123456");
-                database.Instance = db;
+                data.database.Instance = db;
                 var wspace = new workspace();
                 wspace.Name = "todo";
-                wspace.TargetDb = "merged";
-                wspace.SourceDbs = new List<string>() { "card1","card2","card3" };
+                wspace.TargetDb = new data.dbname("merged");
+                wspace.SourceDbs = new List<data.dbname>()
+                {
+                    new data.dbname("card1"),
+                    new data.dbname("card2"),
+                    new data.dbname("card3")
+                };
 
                 new merge().main(wspace);
                 Console.WriteLine("any key to exit");
@@ -41,5 +46,5 @@ namespace fetchdb
 }
 
 /*
- * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0
+ * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0 & .NET Framework 4.6.1
  */

@@ -12,7 +12,6 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
-using fetchdb.data;
 
 namespace fetchdb
 {
@@ -23,15 +22,34 @@ namespace fetchdb
         {
             get;set;
         }
-        private List<AvatarInfo> all_avatars_info = new List<AvatarInfo>();
-        private List<AccountInfo> all_account_info = new List<AccountInfo>();
+        private List<AvatarInfo> all_avatars_info = null;
+        private List<AccountInfo> all_accounts_info = null;
 
         // carefully use it, todo: refactor, should have some access limit.
         public List<AvatarInfo> All_Avatars
         {
             get { return all_avatars_info; }
+            set { all_avatars_info = value; }
+        }
+        public List<AccountInfo> All_Account
+        {
+            get { return all_accounts_info; }
+            set { all_accounts_info = value; }
         }
 
+        private List<AvatarInfo> remaped_avatars_info = null;
+        private List<AccountInfo> remaped_accounts_info = null;
+
+        public List<AvatarInfo> Remaped_Avatars
+        {
+            get { return remaped_avatars_info; }
+            set { remaped_avatars_info = value; }
+        }
+        public List<AccountInfo> Remaped_Accounts
+        {
+            get { return remaped_accounts_info; }
+            set { remaped_accounts_info = value; }
+        }
 
         public void store_avatar(string name,UInt64 dbid,string server_db)
         {
@@ -52,6 +70,18 @@ namespace fetchdb
                     break;
                 }
             }
+        }
+
+        public AvatarInfo get_avatarinfo_by_oldinfo(UInt64 old_id,string old_server)
+        {
+            foreach(var v in all_avatars_info)
+            {
+                if(v.old_dbid == old_id && v.serverid == old_server)
+                {
+                    return v;
+                }
+            }
+            return null;
         }
 
         public  bool is_avatar_newid_allloaded()
@@ -79,11 +109,34 @@ namespace fetchdb
             return true;
         }
 
-        public void store_account(string name,UInt64 dbid,string server_db)
+        public void store_account_summary(AccountInfo ai,string server_db)
         {
-            all_account_info.Add(new AccountInfo() { old_name = name,old_dbid = dbid,serverid = server_db });
+            all_accounts_info.Add(new AccountInfo() { old_name = ai.old_name,old_dbid = ai.old_dbid,old_avatarinfo = ai.old_avatarinfo,serverid = server_db });
         }
 
+        public void account_newid(UInt64 new_id,UInt64 old_id,string old_server)
+        {
+            foreach(var v in all_accounts_info)
+            {
+                if(v.old_dbid == old_id && v.serverid == old_server)
+                {
+                    v.new_dbid = new_id;
+                    break;
+                }
+            }
+        }
+
+        public bool is_account_newid_allloaded()
+        {
+            foreach(var kvp in all_accounts_info)
+            {
+                if(kvp.new_dbid < int.MaxValue)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         public void Save(string file_name)
         {
@@ -104,11 +157,16 @@ namespace fetchdb
                 {
                     all_avatars_info = new List<AvatarInfo>();
                 }
+                all_accounts_info = cinfo.all_accounts_info;
+                if(all_accounts_info == null)
+                {
+                    all_accounts_info = new List<AccountInfo>();
+                }
             }
         }
     }
 }
 
 /*
- * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0
+ * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0 & .NET Framework 4.6.1
  */

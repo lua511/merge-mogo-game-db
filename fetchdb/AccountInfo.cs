@@ -14,11 +14,15 @@ using System.Threading.Tasks;
 
 namespace fetchdb
 {
-    class global_config
+    [Serializable]
+    public class AccountInfo
     {
-        public static int MYSQL_EXCUTE_MAX_TIMEOUT_SECOND = 300;
-        public static readonly data.tbname avatar_table_name = new data.tbname(@"tbl_Avatar");
-        public static readonly data.tbname account_table_name = new data.tbname(@"tbl_Account");
+        public UInt64 new_dbid { get; set; }
+        public string old_name { get; set; }
+        public UInt64 old_dbid { get; set; }
+        public string serverid { get; set; }
+        public string old_avatarinfo { get; set; }
+        public string new_avatarinfo { get; set; }
     }
 }
 

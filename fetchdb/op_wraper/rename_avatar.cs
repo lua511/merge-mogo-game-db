@@ -11,28 +11,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using fetchdb.data;
 
 namespace fetchdb.op_wraper
 {
     class rename_avatar
     {
+        private static readonly string file_data_name = "rempaed_avatar.dat";
+        private static readonly data.tbname avatar_table_name = global_config.avatar_table_name;
+        private data.database curr_conn;
         private cachedata cached;
 
         private List<string> old_names;
         private List<string> conficted_names;
-
         private Dictionary<UInt64, string> renamed_names;
 
-        public rename_avatar(cachedata cd)
+        public rename_avatar(data.database conn,cachedata cd)
         {
+            curr_conn = conn;
             cached = cd;
             old_names = new List<string>();
             conficted_names = new List<string>();
             renamed_names = new Dictionary<ulong, string>();
         }
 
-        private List<AvatarInfo> GetAvatarsWithByOldName(string old_name)
+        public void process(workspace wspace)
+        {
+            if(System.IO.File.Exists(file_data_name))
+            {
+                // load
+                load_from_data_file(wspace);
+            }
+            else
+            {
+                create_data_alonewith_save_db_file(wspace);
+            }
+            post_check_data(wspace);
+        }
+
+        public void load_from_data_file(workspace wspace)
+        {
+            cached.Remaped_Avatars = new cpe_wraper.serialize_op<List<AvatarInfo>>().load(file_data_name);
+        }
+
+        private List<AvatarInfo> GetAvatarsInfoByOldName(string old_name)
         {
             var dst = new List<AvatarInfo>();
             foreach(var v in cached.All_Avatars)
@@ -48,10 +69,16 @@ namespace fetchdb.op_wraper
         // how to rename
         //   1. rolename + server_id
         //   2. if exist, try rolename + auto_inc id
-        public Dictionary<UInt64, string> process(workspace ws)
+        void create_data_alonewith_save_db_file(workspace ws)
         {
+            // clear context
+            old_names.Clear();
+            conficted_names.Clear();
+            renamed_names.Clear();
+
             var all_avatar = cached.All_Avatars;
 
+            // cache names & conficted names
             foreach(var v in all_avatar)
             {
                 if(!old_names.Contains(v.old_name))
@@ -63,18 +90,19 @@ namespace fetchdb.op_wraper
                     conficted_names.Add(v.old_name);
                 }
             }
-            
+            // rename
             foreach(var conficted in conficted_names)
             {
-                var avatars = GetAvatarsWithByOldName(conficted);
+                var avatars = GetAvatarsInfoByOldName(conficted);
                 foreach(var ava in avatars)
                 {
+                    bool bRenamed = false;
                     var try_new_name = ava.old_name + ws.GetSourceDbIndex(ava.serverid).ToString();
                     if(!old_names.Contains(try_new_name))
                     {
-                        ava.new_name = try_new_name;
                         old_names.Add(try_new_name);
                         renamed_names.Add(ava.new_dbid, ava.new_name);
+                        bRenamed = true;
                     }
                     if(string.IsNullOrEmpty(ava.new_name))
                     {
@@ -84,33 +112,74 @@ namespace fetchdb.op_wraper
                             try_new_name = ava.old_name + cur_idx.ToString();
                             if(!old_names.Contains(try_new_name))
                             {
-                                ava.new_name = try_new_name;
                                 old_names.Add(try_new_name);
                                 renamed_names.Add(ava.new_dbid, ava.new_name);
+                                bRenamed = true;
                                 break;
                             }
                         }
                     }
-                    if (string.IsNullOrEmpty(ava.new_name))
+                    if (!bRenamed)
                     {
                         throw new Exception("too many rename tries,give up");
                     }
                 }
             }
-            return renamed_names;
-        }
-
-        public void fill_all_newnames(workspace ws, Dictionary<UInt64,string> renameds)
-        {
+            // apply new name
+            var target_avatars = new List<AvatarInfo>();
             foreach (var kvp in cached.All_Avatars)
             {
-                if (renameds.ContainsKey(kvp.new_dbid))
+                var p = kvp.deep_copy();
+
+                if (renamed_names.ContainsKey(p.new_dbid))
                 {
-                    
+                    p.new_name = renamed_names[p.new_dbid];
                 }
                 else
                 {
-                    kvp.new_name = kvp.old_name;
+                    p.new_name = p.old_name;
+                }
+            }
+            cached.Remaped_Avatars = target_avatars;
+
+            // save to db
+            foreach(var kvp in target_avatars)
+            {
+                if(renamed_names.ContainsKey(kvp.new_dbid))
+                {
+                    var anw = new cog_wraper.avatar_name_writer(kvp);
+                    new cog_wraper.ogtable_writer<cog_wraper.avatar_name_writer>(anw, curr_conn, ws.TargetDb, avatar_table_name).save_summary();
+                }
+            }
+
+            // save to disk
+            new cpe_wraper.serialize_op<List<AvatarInfo>>().save(file_data_name, cached.Remaped_Avatars);
+        }
+
+        void post_check_data(workspace ws)
+        {
+            // just check count & 2 sample
+            if(cached.Remaped_Avatars.Count != cached.All_Avatars.Count)
+            {
+                throw new Exception("post check failed,rename avatar table");
+            }
+            var renamed_cache = new List<AvatarInfo>();
+            foreach(var kvp in cached.Remaped_Avatars)
+            {
+                if(kvp.new_name != kvp.old_name)
+                {
+                    renamed_cache.Add(kvp);
+                }
+            }
+            // todo: random check
+            for(int i = 0;i < 2 & i < renamed_cache.Count; ++i)
+            {
+                var ai = renamed_cache[i];
+                var anr = new cog_wraper.avatar_name_reader(ai.new_dbid);
+                new cog_wraper.ogtable_reader<cog_wraper.avatar_name_reader>(anr, curr_conn, ws.TargetDb, avatar_table_name).load_summary();
+                if(anr.Value != ai.new_name)
+                {
+                    throw new Exception("post check failed,avatar new name");
                 }
             }
         }
@@ -118,5 +187,5 @@ namespace fetchdb.op_wraper
 }
 
 /*
- * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0
+ * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0 & .NET Framework 4.6.1
  */

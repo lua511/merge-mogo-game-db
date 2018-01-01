@@ -12,19 +12,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace fetchdb.data
+namespace fetchdb
 {
-    [Serializable]
-    public class AvatarInfo
+    class safeformat
     {
-        public string old_name { get; set; }
-        public string new_name { get; set; }
-        public UInt64 old_dbid { get; set; }
-        public UInt64 new_dbid { get; set; }
-        public string serverid { get; set; }
+        public static string format(string fmt, params string[] obj)
+        {
+            return string.Format(fmt, obj);
+        }
     }
 }
 
 /*
- * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0
+ * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0 & .NET Framework 4.6.1
  */

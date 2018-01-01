@@ -12,13 +12,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace fetchdb
+namespace fetchdb.data
 {
-    class global_config
+    class dbname
     {
-        public static int MYSQL_EXCUTE_MAX_TIMEOUT_SECOND = 300;
-        public static readonly data.tbname avatar_table_name = new data.tbname(@"tbl_Avatar");
-        public static readonly data.tbname account_table_name = new data.tbname(@"tbl_Account");
+        public string str_database_name;
+        public dbname(string name)
+        {
+            str_database_name = name;
+        }
+
+        public string database_name
+        {
+            get
+            {
+                return str_database_name;
+            }
+        }
+
+        private static dbname empty = new dbname(string.Empty);
+        public static dbname Empty
+        {
+            get
+            {
+                return empty;
+            }
+        }
     }
 }
 

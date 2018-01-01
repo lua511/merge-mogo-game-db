@@ -12,13 +12,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace fetchdb.cmd_wraper
+// todo : refactor 
+namespace fetchdb.cpe_wraper
 {
 
-
-    class StringReaderAdaptor
+    class StringReaderAdaptor : iread_adaptor
     {
         private List<string> dst;
+        private string str_sql_select;
+        private string str_sql_where;
         private int data_index;
 
         public List<string> Values
@@ -29,18 +31,36 @@ namespace fetchdb.cmd_wraper
             }
         }
 
-        public StringReaderAdaptor(int data_index)
+        public StringReaderAdaptor(int data_index,string sql_select,string sql_where)
         {
             dst = new List<string>();
             this.data_index = data_index;
+            this.str_sql_select = sql_select;
+            this.str_sql_where = sql_where;
         }
-        public StringReaderAdaptor()
-            : this(0)
+
+        public string sql_select
+        {
+            get
+            {
+                return str_sql_select;
+            }
+        }
+
+        public string sql_where
+        {
+            get
+            {
+                return str_sql_where;
+            }
+        }
+
+        public void update(MySql.Data.MySqlClient.MySqlCommand cmd)
         {
 
         }
         
-        public void Load(MySql.Data.MySqlClient.MySqlDataReader rds)
+        public void load(MySql.Data.MySqlClient.MySqlDataReader rds)
         {
             while (rds.Read())
             {
@@ -48,6 +68,58 @@ namespace fetchdb.cmd_wraper
             }
         }
     }
+
+    class IntReaderAdaptor : iread_adaptor
+    {
+        private List<int> dst;
+        private int data_index;
+        private string str_sql_select;
+        private string str_sql_where;
+        public List<int> Values
+        {
+            get
+            {
+                return dst;
+            }
+        }
+        public IntReaderAdaptor(int data_index,string sql_select,string sql_where)
+        {
+            dst = new List<int>();
+            this.data_index = data_index;
+            this.str_sql_select = sql_select;
+            this.str_sql_where = sql_where;
+        }
+
+        public string sql_select
+        {
+            get
+            {
+                return str_sql_select;
+            }
+        }
+        
+        public string sql_where
+        {
+            get
+            {
+                return str_sql_where;
+            }
+        }
+
+        public void update(MySql.Data.MySqlClient.MySqlCommand cmd)
+        {
+
+        }
+
+        public void load(MySql.Data.MySqlClient.MySqlDataReader rds)
+        {
+            while(rds.Read())
+            {
+                dst.Add(rds.GetInt32(data_index));
+            }
+        }
+    }
+
 
     class KeyStringReaderAdaptor
     {
@@ -104,5 +176,5 @@ namespace fetchdb.cmd_wraper
 }
 
 /*
- * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0
+ * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0 & .NET Framework 4.6.1
  */

@@ -12,13 +12,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace fetchdb
+namespace fetchdb.merge_op
 {
-    class global_config
+    // 1. check target db exists
+    // 2. create it if need
+    class target_dbop
     {
-        public static int MYSQL_EXCUTE_MAX_TIMEOUT_SECOND = 300;
-        public static readonly data.tbname avatar_table_name = new data.tbname(@"tbl_Avatar");
-        public static readonly data.tbname account_table_name = new data.tbname(@"tbl_Account");
+        private data.database current_connection;
+        public target_dbop(data.database connection, cachedata cdata)
+        {
+            current_connection = connection;
+        }
+
+        public void process(workspace wspace)
+        {
+            var cmd = new cmd_wraper.database_cmd(current_connection, wspace.TargetDb);
+            cmd.create_database(false);
+        }
     }
 }
 

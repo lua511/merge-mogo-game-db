@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace fetchdb
+namespace fetchdb.data
 {
     // only connection manager & sql_cmd executer
     class database
@@ -20,14 +20,6 @@ namespace fetchdb
         public static database Instance
         {
             get;set;
-        }
-
-        public MySql.Data.MySqlClient.MySqlConnection Conn
-        {
-            get
-            {
-                return connection;
-            }
         }
 
         #region mysql_raw
@@ -79,37 +71,18 @@ namespace fetchdb
         }
         #endregion
 
-        // mogo db need "tbl_" header
-        private string get_full_table_name(string database_name,string table_name)
-        {
-            string header = "tbl_";
-            return database_name + @"." + (table_name.StartsWith(header) ? "" : header) + table_name;
-        }
-
-        class one_col_string
-        {
-            private List<string> dst = new List<string>();
-
-            public void Load(MySql.Data.MySqlClient.MySqlDataReader rds)
-            {
-                while (rds.Read())
-                {
-                    dst.Add(rds.GetString(0));
-                }
-            }
-
-            public List<string> Dst
-            {
-                get { return dst; }
-            }
-        }
-
         #region simple_thin_wrapper
 
         // ExecuteReader
-        public void    execute_read(string cmd_text,Action<MySql.Data.MySqlClient.MySqlDataReader> act)
+        public MySql.Data.MySqlClient.MySqlCommand prepare_read_cmd(string cmd_text)
         {
             var cmd = new MySql.Data.MySqlClient.MySqlCommand(cmd_text, connection);
+            cmd.CommandTimeout = global_config.MYSQL_EXCUTE_MAX_TIMEOUT_SECOND;
+            return cmd;
+        }
+
+        public void execute_read(MySql.Data.MySqlClient.MySqlCommand cmd, Action<MySql.Data.MySqlClient.MySqlDataReader> act)
+        {
             cmd.CommandTimeout = global_config.MYSQL_EXCUTE_MAX_TIMEOUT_SECOND;
             using (var reader = cmd.ExecuteReader())
             {
@@ -118,35 +91,21 @@ namespace fetchdb
         }
 
         // ExecuteNonQuery
-        public void execute_nonquery(string cmd_text)
+        public MySql.Data.MySqlClient.MySqlCommand prepare_write_cmd(string cmd_text)
         {
             var cmd = new MySql.Data.MySqlClient.MySqlCommand(cmd_text, connection);
             cmd.CommandTimeout = global_config.MYSQL_EXCUTE_MAX_TIMEOUT_SECOND;
+            return cmd;
+        }
+        public void execute_nonquery(MySql.Data.MySqlClient.MySqlCommand cmd)
+        {
             cmd.ExecuteNonQuery();
         }
-
-
-        #region temp_functions
-
-        public List<string> get_dump_names(string sql)
-        {
-            var ocs = new one_col_string();
-            execute_read(sql, ocs.Load);
-
-            return ocs.Dst;
-        }
-
-        public void run_sql_noquery(string sql)
-        {
-            execute_nonquery(sql);
-        }
-
-        #endregion
 
         #endregion
     }
 }
 
 /*
- * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0
+ * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0 & .NET Framework 4.6.1
  */

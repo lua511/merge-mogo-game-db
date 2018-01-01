@@ -18,11 +18,11 @@ namespace fetchdb
     [Serializable]
     class workspace
     {
-        private string schema_db = string.Empty;
+        private data.dbname schema_db = null;
 
         public string Name { get; set; }
-        public string TargetDb { get; set; }
-        public List<string> SourceDbs
+        public data.dbname TargetDb { get; set; }
+        public List<data.dbname> SourceDbs
         {
             get;set;
         }
@@ -30,18 +30,18 @@ namespace fetchdb
         {
             for(int i = 0;i < SourceDbs.Count; ++i)
             {
-                if(SourceDbs[i] == source_db)
+                if(SourceDbs[i].database_name == source_db)
                 {
                     return i + 1;
                 }
             }
             return SourceDbs.Count + 1;
         }
-        public string SchemaDatabase
+        public data.dbname SchemaDatabase
         {
             get
             {
-                if(!string.IsNullOrEmpty(schema_db))
+                if(schema_db != null)
                 {
                     return schema_db;
                 }
@@ -49,7 +49,7 @@ namespace fetchdb
                 {
                     return SourceDbs[0];
                 }
-                return string.Empty;
+                throw new Exception("cannot find schema data");
             }
             set
             {
@@ -60,5 +60,5 @@ namespace fetchdb
 }
 
 /*
- * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0
+ * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0 & .NET Framework 4.6.1
  */

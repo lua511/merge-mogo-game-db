@@ -14,11 +14,27 @@ using System.Threading.Tasks;
 
 namespace fetchdb
 {
-    class global_config
+    [Serializable]
+    public class AvatarInfo
     {
-        public static int MYSQL_EXCUTE_MAX_TIMEOUT_SECOND = 300;
-        public static readonly data.tbname avatar_table_name = new data.tbname(@"tbl_Avatar");
-        public static readonly data.tbname account_table_name = new data.tbname(@"tbl_Account");
+        public string old_name { get; set; }
+        public string new_name { get; set; }
+        public UInt64 old_dbid { get; set; }
+        public UInt64 new_dbid { get; set; }
+        public string serverid { get; set; }
+
+        public AvatarInfo deep_copy()
+        {
+            var p = new AvatarInfo
+            {
+                old_name = old_name,
+                new_name = new_name,
+                old_dbid = old_dbid,
+                new_dbid = new_dbid,
+                serverid = serverid
+            };
+            return p;
+        }
     }
 }
 

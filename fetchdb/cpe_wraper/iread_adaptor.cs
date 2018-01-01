@@ -12,17 +12,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace fetchdb.data
+namespace fetchdb.cpe_wraper
 {
-    [Serializable]
-    public class AccountInfo
+    interface iread_adaptor
     {
-        public string old_name { get; set; }
-        public UInt64 old_dbid { get; set; }
-        public string serverid { get; set; }
+        string sql_select { get; }
+        string sql_where { get; }
+        void update(MySql.Data.MySqlClient.MySqlCommand cmd);
+        void load(MySql.Data.MySqlClient.MySqlDataReader rds);
     }
 }
 
 /*
- * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0
+ * by Microsoft Visual Studio Community 2017 & NuGet 4.5.0 & .NET Framework 4.6.1
  */
