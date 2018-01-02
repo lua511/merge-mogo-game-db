@@ -50,6 +50,24 @@ namespace fetchdb
             get { return remaped_accounts_info; }
             set { remaped_accounts_info = value; }
         }
+        
+        public List<string> Simple_Tables
+        {
+            get;set;
+        }
+
+        public List<string> One_Tables
+        {
+            get;set;
+        }
+
+        public List<string> DropAll_Tables
+        { get; set; }
+
+        public List<TableIdInfoSet>   Remaped_IdTables
+        {
+            get;set;
+        }
 
         public void store_avatar(string name,UInt64 dbid,string server_db)
         {

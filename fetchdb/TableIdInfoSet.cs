@@ -14,15 +14,39 @@ using System.Threading.Tasks;
 
 namespace fetchdb
 {
-    class safeformat
+    [Serializable]
+    class TableIdInfoSet
     {
-        public static string format(string fmt, params string[] obj)
+        private TableIdInfoDesc table_desc;
+        private List<TableIdInfo> all_records;
+
+        public TableIdInfoDesc  Desc
         {
-            return string.Format(fmt, obj);
+            get
+            {
+                return table_desc;
+            }
+            set
+            {
+                table_desc = value;
+            }
         }
-        public static string get_keystr_from_dbid_serverid(UInt64 old_dbid,string serverid)
+        public data.tbname table_name
         {
-            return string.Format(@"{0}@{1}", old_dbid, serverid);
+            get;
+            set;
+        }
+
+        public List<TableIdInfo> Records
+        {
+            get
+            {
+                return all_records;
+            }
+            set
+            {
+                all_records = value;
+            }
         }
     }
 }

@@ -60,11 +60,6 @@ namespace fetchdb.merge_op
             return dst;
         }
 
-        private string get_keystr_from_dbid_serverid(UInt64 dbid,string serverid)
-        {
-            return string.Format(@"{0}@{1}", dbid, serverid);
-        }
-
         // how to remap
         //  1. avatar dbid
         //  2. avatar name
@@ -77,7 +72,7 @@ namespace fetchdb.merge_op
             var dbid_to_avatar = new Dictionary<UInt64, AvatarInfo>();
             foreach(var ava_info in cached.Remaped_Avatars)
             {
-                var fake_key = get_keystr_from_dbid_serverid(ava_info.old_dbid, ava_info.serverid);
+                var fake_key = safeformat.get_keystr_from_dbid_serverid(ava_info.old_dbid, ava_info.serverid);
                 dbids_to_new.Add(fake_key, ava_info.new_dbid);
                 dbids_to_name.Add(fake_key, ava_info.new_name);
                 dbid_to_avatar.Add(ava_info.new_dbid, ava_info);
@@ -107,7 +102,7 @@ namespace fetchdb.merge_op
                 {
                     var old_id = ava.id;
                     var server_id = p.serverid;
-                    var fake_key = get_keystr_from_dbid_serverid(old_id, server_id);
+                    var fake_key = safeformat.get_keystr_from_dbid_serverid(old_id, server_id);
                     var new_id = dbids_to_new[fake_key];
                     var new_name = dbids_to_name[fake_key];
                     ava.id = new_id;

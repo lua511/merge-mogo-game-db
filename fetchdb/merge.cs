@@ -44,6 +44,14 @@ namespace fetchdb
             new merge_op.rename_avatar(data.database.Instance, cd).process(wspace);
             // remap account
             new merge_op.remap_account(data.database.Instance, cd).process(wspace);
+            // simple copy some empty tables
+            new merge_op.simplecopy_tblop(data.database.Instance, cd).process(wspace);
+            // copy table & rename id
+            new merge_op.remapid_tblop(data.database.Instance, cd).process(wspace);
+            // simple one table
+            new merge_op.simpleone_tblop(data.database.Instance, cd).process(wspace);
+            // drop all tables
+            new merge_op.simpledropall_tbop(data.database.Instance, cd).process(wspace);
         }
     }
 }

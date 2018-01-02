@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace fetchdb.data
 {
+    [Serializable]
     class dbname
     {
         public string str_database_name;
@@ -29,7 +30,7 @@ namespace fetchdb.data
                 return str_database_name;
             }
         }
-
+        [NonSerialized]
         private static dbname empty = new dbname(string.Empty);
         public static dbname Empty
         {

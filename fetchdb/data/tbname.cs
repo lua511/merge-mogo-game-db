@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 namespace fetchdb.data
 {
     // typeinfo is better than just string ( think tbname & dbname )
+    [Serializable]
     class tbname
     {
         private string str_table_name;
@@ -35,7 +36,7 @@ namespace fetchdb.data
         {
             throw new NotImplementedException();
         }
-
+        [NonSerialized]
         private static tbname empty = new tbname(string.Empty);
         public static tbname Empty
         {

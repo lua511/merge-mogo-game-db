@@ -14,15 +14,17 @@ using System.Threading.Tasks;
 
 namespace fetchdb.cog_wraper
 {
-    class account_summary_reader : cpe_wraper.iread_adaptor
+    class table_idremap_reader : cpe_wraper.iread_adaptor
     {
-        private List<AccountInfo> dst;
-        public account_summary_reader()
+        private List<TableIdInfo> dst;
+        private TableIdInfoDesc desc;
+        public table_idremap_reader(TableIdInfoDesc desc)
         {
-            dst = new List<AccountInfo>();
+            this.desc = desc;
+            dst = new List<TableIdInfo>();
         }
 
-        public List<AccountInfo> Values
+        public List<TableIdInfo> Values
         {
             get
             {
@@ -34,7 +36,16 @@ namespace fetchdb.cog_wraper
         {
             get
             {
-                return @"id,sm_name,old_id,old_server,sm_avatarsInfo";
+                var builder = new StringBuilder();
+                builder.Append(@"id");
+                builder.Append(@",old_id");
+                builder.Append(@",old_server");
+                foreach (var v in desc.columns)
+                {
+                    builder.Append(@",");
+                    builder.Append(v);
+                }
+                return builder.ToString();
             }
         }
 
@@ -48,26 +59,25 @@ namespace fetchdb.cog_wraper
 
         public void update(MySql.Data.MySqlClient.MySqlCommand cmd)
         {
-            
+
         }
 
         public void load(MySql.Data.MySqlClient.MySqlDataReader rds)
         {
-            while(rds.Read())
+            while (rds.Read())
             {
                 var id = rds.GetUInt64(0);
-                var old_name = rds.GetString(1);
-                var old_id = rds.GetUInt64(2);
-                var serverid = rds.GetString(3);
-                var old_avatarInfos = new cpe_wraper.blobstring_loader().Load(rds, 4);
-
-                var acc = new AccountInfo();
-                acc.new_dbid = id;
-                acc.old_name = old_name;
-                acc.old_dbid = old_id;
-                acc.serverid = serverid;
-                acc.old_avatarinfo = old_avatarInfos;
-                dst.Add(acc);
+                var ti = new TableIdInfo();
+                ti.values = new List<ulong>();
+                ti.new_dbid = id;
+                ti.old_dbid = rds.GetUInt64(1);
+                ti.serverid = rds.GetString(2);
+                for (int i = 0; i < desc.columns.Count; ++i)
+                {
+                    var v = rds.GetUInt64(i + 3);
+                    ti.values.Add(v);
+                }
+                dst.Add(ti);
             }
         }
     }

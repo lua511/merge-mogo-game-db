@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+  <ArenaData>
+    <element>avatarDbid</element>
+    <element>enemy</element>
+    <element>candidateEnemy</element>
+  </ArenaData>
+</root>
