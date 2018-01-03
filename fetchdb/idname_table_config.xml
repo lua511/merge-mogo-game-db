@@ -1,7 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <root>
-  <CashMgr_seno>
-    <uint>role_dbid</uint>
-    <str>role_name</str>
-  </CashMgr_seno>
+  <MissionRecord>
+    <uint>PlayerDbid</uint>
+    <str>PlayerName</str>
+  </MissionRecord>
+  <RankDataSuper>
+    <uint>avatarDbid</uint>
+    <str>avatarName</str>
+  </RankDataSuper>
+  <SuperRankData>
+    <uint>avatarDbid</uint>
+    <str>avatarName</str>
+  </SuperRankData>
+  <WorldBossData>
+    <uint>avatarDbid</uint>
+    <str>name</str>
+  </WorldBossData>
 </root>

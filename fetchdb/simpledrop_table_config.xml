@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <root>
   <table>CashMgr</table>
+  <table>CashMgr_seno</table>
+  <table>CashMgr_senoba</table>
+
+  <table>ChargeMgr</table>
   <table>ChargeMgr_first</table>
   <table>ChargeMgr_recs</table>
   <table>Collector</table>
@@ -15,4 +19,24 @@
   <table>last_server_account</table>
   <table>Mail</table>
   <table>mail_blob_public</table>
+  <table>mail_public</table>
+  <table>MailMgr</table>
+  <table>MapMgr</table>
+  <table>Mercenary</table>
+  <table>mgr_compensate</table>
+  <table>MissionMgr</table>
+  <table>Monster</table>
+  <table>NameMgr</table>
+  <table>OblivionGateMgr</table>
+  <table>OfflineData</table>
+  <table>OfflineMgr</table>
+  <table>RankListData</table>
+  <table>RouletteMgr</table>
+  <table>SpaceLoader</table>
+  <table>SpawnPoint</table>
+  <table>SuperGodMgr</table>
+  <table>TeleportPointSrc</table>
+  <table>UserMgr</table>
+  <table>UserMgrData</table>
+  <table>WorldBossMgr</table>
 </root>

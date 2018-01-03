@@ -8,4 +8,13 @@
   <mail_blob>
     <element>avatarDbid</element>
   </mail_blob>
+  <mail_private>
+    <element>avatarDbid</element>
+  </mail_private>
+  <RankDataDiamond>
+    <element>avatarDbid</element>
+  </RankDataDiamond>
+  <RankDataStar>
+    <element>avatarDbid</element>
+  </RankDataStar>
 </root>
