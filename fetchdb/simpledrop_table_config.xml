@@ -1,4 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <root>
   <table>CashMgr</table>
+  <table>ChargeMgr_first</table>
+  <table>ChargeMgr_recs</table>
+  <table>Collector</table>
+  <table>DefensePvPMgr</table>
+  <table>EventMgr</table>
+  <table>FlyDragonMgr</table>
+  <table>GameMgr</table>
+  <table>GlobalDataMgr</table> <!-- should copy data-->
+  <table>Guild</table>
+  <table>GuildMessage</table>
+  <table>GuildMgr</table>
+  <table>last_server_account</table>
+  <table>Mail</table>
+  <table>mail_blob_public</table>
 </root>

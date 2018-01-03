@@ -68,6 +68,10 @@ namespace fetchdb
         {
             get;set;
         }
+        public List<TableIdNameInfoSet> Remaped_IdNameTables
+        {
+            get;set;
+        }
 
         public void store_avatar(string name,UInt64 dbid,string server_db)
         {

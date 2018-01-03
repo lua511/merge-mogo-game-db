@@ -52,6 +52,24 @@ namespace fetchdb.cqx_wraper
             }
             return dst;
         }
+        // xml file : root \ table \ id-name
+        public Dictionary<string,KeyValuePair<string,string>>   load_by_pair(string file_name)
+        {
+            var dst = new Dictionary<string, KeyValuePair<string, string>>();
+            var doc = XDocument.Load(file_name);
+            var nodes = from p in doc.Descendants("uint") where p.Parent != null && p.Parent.Parent != null && p.Parent.Parent.Name == "root" select p.Parent;
+            foreach(var n in nodes)
+            {
+                var p1 = n.Descendants("uint").First();
+                var p2 = n.Descendants("str").First();
+
+                var key = @"tbl_" + n.Name.ToString();
+                var v1 = @"sm_" + p1.Value;
+                var v2 = @"sm_" + p2.Value;
+                dst.Add(key, new KeyValuePair<string, string>(v1,v2));
+            }
+            return dst;
+        }
     }
 }
 

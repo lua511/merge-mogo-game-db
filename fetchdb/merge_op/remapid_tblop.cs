@@ -17,7 +17,7 @@ namespace fetchdb.merge_op
     class remapid_tblop
     {
         private static readonly string file_data_name = @"idmap.dat";
-        private static readonly string config_file_name = @"idreamap_table_config.xml";
+        private static readonly string config_file_name = @"idremap_table_config.xml";
 
         private Dictionary<string, List<string>> configed_tables;
 
@@ -96,7 +96,7 @@ namespace fetchdb.merge_op
                 }
             }
 
-            // local datase
+            // load datas
             foreach(var cfgtbl in configed_tables)
             {
                 var table_set = new TableIdInfoSet();

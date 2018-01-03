@@ -64,6 +64,8 @@
     <Compile Include="cog_wraper\ogtable_deletor.cs" />
     <Compile Include="cog_wraper\ogtable_writer.cs" />
     <Compile Include="cog_wraper\remapid_batch_writer.cs" />
+    <Compile Include="cog_wraper\remap_idname_batch_writer.cs" />
+    <Compile Include="cog_wraper\table_idname_remap_reader.cs" />
     <Compile Include="cog_wraper\table_idremap_reader.cs" />
     <Compile Include="cpe_wraper\blobstring_loader.cs" />
     <Compile Include="cmd_wraper\connection_cmd.cs" />
@@ -89,6 +91,7 @@
     <Compile Include="merge_op\avatar_tblop.cs" />
     <Compile Include="cpe_wraper\serialize_op.cs" />
     <Compile Include="merge_op\remapid_tblop.cs" />
+    <Compile Include="merge_op\remap_idname_tblop.cs" />
     <Compile Include="merge_op\remap_account.cs" />
     <Compile Include="merge_op\simplecopy_tblop.cs" />
     <Compile Include="merge_op\simpledropall_tbop.cs" />
@@ -101,6 +104,8 @@
     <Compile Include="scriptdata\AvatarParser.cs" />
     <Compile Include="TableIdInfo.cs" />
     <Compile Include="TableIdInfoSet.cs" />
+    <Compile Include="TableIdNameInfo.cs" />
+    <Compile Include="TableIdNameInfoSet.cs" />
     <Compile Include="workspace.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -108,7 +113,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="idreamap_table_config.xml">
+    <Content Include="idname_table_config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="idremap_table_config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="simpledrop_table_config.xml">

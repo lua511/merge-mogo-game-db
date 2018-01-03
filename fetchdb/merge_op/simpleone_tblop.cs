@@ -70,6 +70,7 @@ namespace fetchdb.merge_op
                 new cnl_wrapper.nltable_cmd(curr_conn, wspace.TargetDb, tbl_name).clone_from(wspace.SchemaDatabase,1);
                 dst_tables.Add(v);
             }
+            // skill fill data
             profile.One_Tables = dst_tables;
             // save to disk
             new cpe_wraper.serialize_op<List<string>>().save(file_data_name, profile.One_Tables);
@@ -79,12 +80,12 @@ namespace fetchdb.merge_op
         {
             foreach (var v in configed_tables)
             {
-                if (!profile.Simple_Tables.Contains(v))
+                if (!profile.One_Tables.Contains(v))
                 {
                     return false;
                 }
             }
-            foreach(var v in profile.Simple_Tables)
+            foreach(var v in profile.One_Tables)
             {
                 if(!configed_tables.Contains(v))
                 {
