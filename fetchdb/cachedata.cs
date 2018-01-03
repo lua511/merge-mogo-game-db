@@ -73,6 +73,11 @@ namespace fetchdb
             get;set;
         }
 
+        public List<ScriptIdInfoSet>    RemapedScriptsTable
+        {
+            get;set;
+        }
+
         public void store_avatar(string name,UInt64 dbid,string server_db)
         {
             var ai = new AvatarInfo();

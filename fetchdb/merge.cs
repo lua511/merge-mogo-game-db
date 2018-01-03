@@ -54,6 +54,8 @@ namespace fetchdb
             new merge_op.simpledropall_tbop(data.database.Instance, cd).process(wspace);
             // rename id & name
             new merge_op.remap_idname_tblop(data.database.Instance, cd).process(wspace);
+            // script ids
+            new merge_op.remap_script_id_tblop(data.database.Instance, cd).process(wspace);
         }
     }
 }

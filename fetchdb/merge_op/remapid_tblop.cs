@@ -65,7 +65,7 @@ namespace fetchdb.merge_op
             foreach(var nava in profile.Remaped_Avatars)
             {
                 var fakekey = safeformat.get_keystr_from_dbid_serverid(nava.old_dbid, nava.serverid);
-                fakekey2dbid.Add(fakekey, nava.old_dbid);
+                fakekey2dbid.Add(fakekey, nava.new_dbid);
             }
         }
 

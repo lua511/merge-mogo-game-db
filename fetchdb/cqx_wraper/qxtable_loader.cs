@@ -70,6 +70,36 @@ namespace fetchdb.cqx_wraper
             }
             return dst;
         }
+        // xml file : root \ table \ column-name
+        public List<KeyValuePair<string,string>> load_by_script_id(string file_name)
+        {
+            var dst = new List<KeyValuePair<string, string>>();
+            var doc = XDocument.Load(file_name);
+            var nodes = from p in doc.Descendants("column") where p.Parent != null && p.Parent.Parent != null && p.Parent.Parent.Name == @"root" select p;
+            foreach(var n in nodes)
+            {
+                var column = @"sm_" + n.Value;
+                var table = @"tbl_" + n.Parent.Name.ToString();
+                dst.Add(new KeyValuePair<string, string>(table, column));
+            }
+            return dst;
+        }
+        public List<KeyValuePair<string,string>>    load_pattern_by_script_id(string file_name,string table_name,string column_name)
+        {
+            table_name = table_name.Replace(@"tbl_","");
+            column_name = column_name.Replace(@"sm_","");
+            var dst = new List<KeyValuePair<string, string>>();
+            var doc = XDocument.Load(file_name);
+            var nodes = from p in doc.Descendants("column") where p.Parent != null && p.Parent.Parent != null && p.Parent.Name == table_name && p.Value == column_name select p.Parent;
+            var patterns = nodes.First().Descendants(@"pattern");
+            foreach(var p in patterns)
+            {
+                var p1 = p.Value;
+                var p2 = p.Attribute("exact").Value;
+                dst.Add(new KeyValuePair<string, string>(p1, p2));
+            }
+            return dst;
+        }
     }
 }
 
