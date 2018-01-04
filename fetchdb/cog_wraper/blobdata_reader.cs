@@ -11,21 +11,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 
 namespace fetchdb.cog_wraper
 {
-    class script_id_reader : cpe_wraper.iread_adaptor
+    class blobdata_reader : cpe_wraper.iread_adaptor
     {
-        private List<ScriptIdInfo> dst;
-        private ScriptIdInfoDesc desc;
-
-        public script_id_reader(ScriptIdInfoDesc desc)
+        private List<SingleColumnInfo> dst;
+        private SingleColumnInfoDesc desc;
+        public blobdata_reader(SingleColumnInfoDesc desc)
         {
-            dst = new List<ScriptIdInfo>();
+            dst = new List<SingleColumnInfo>();
             this.desc = desc;
         }
-        public List<ScriptIdInfo>   Values
+        public List<SingleColumnInfo> Values
         {
             get
             {
@@ -36,12 +34,7 @@ namespace fetchdb.cog_wraper
         {
             get
             {
-                var builder = new StringBuilder();
-                builder.Append(@"id");
-                builder.Append(@",old_id");
-                builder.Append(@",old_server");
-                builder.Append(@",").Append(desc.column_name);
-                return builder.ToString();
+                return @"id," + desc.column_name;
             }
         }
         public string sql_where
@@ -51,21 +44,25 @@ namespace fetchdb.cog_wraper
                 return string.Empty;
             }
         }
-
-        public void update(MySqlCommand cmd)
+        public void update(MySql.Data.MySqlClient.MySqlCommand cmd)
         {
-        }
 
+        }
         public void load(MySql.Data.MySqlClient.MySqlDataReader rds)
         {
             while(rds.Read())
             {
-                var sii = new ScriptIdInfo();
-                sii.id_dbid = rds.GetUInt64(0);
-                sii.old_dbid = rds.GetUInt64(1);
-                sii.serverid = rds.GetString(2);
-                sii.old_info = rds.GetString(3);
-                dst.Add(sii);
+                var sci = new SingleColumnInfo();
+                sci.dbid = rds.GetUInt64(0);
+                if(desc.is_rawint)
+                {
+                    sci.int_value = rds.GetUInt64(1);
+                }
+                else
+                {
+                    sci.str_value = new cpe_wraper.blobstring_loader().Load(rds, 1);
+                }
+                dst.Add(sci);
             }
         }
     }

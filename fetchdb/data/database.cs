@@ -35,16 +35,9 @@ namespace fetchdb.data
             builder.CharacterSet = "utf8";
             connection_string = builder.ToString();
             connection = new MySql.Data.MySqlClient.MySqlConnection(connection_string);
-            try
-            {
-                connection.Open();
-            }
-            catch(System.Exception ex)
-            {
-                Console.WriteLine("Error: " + ex.Message);
-                connection = null;
-                return false;
-            }
+            // no need surround with try-catch, !!! you catch it
+            connection.Open();
+
             return true;
         }
 

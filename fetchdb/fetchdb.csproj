@@ -55,6 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="cachedata.cs" />
+    <Compile Include="cog_wraper\blobdata_reader.cs" />
+    <Compile Include="deepfind\check.cs" />
     <Compile Include="cog_wraper\account_avatarsinfo_batch_writer.cs" />
     <Compile Include="cog_wraper\account_avatarsinfo_writer.cs" />
     <Compile Include="cog_wraper\account_record_deletor.cs" />
@@ -87,6 +89,9 @@
     <Compile Include="AvatarInfo.cs" />
     <Compile Include="data\dbname.cs" />
     <Compile Include="data\tbname.cs" />
+    <Compile Include="deepfind\check_table.cs" />
+    <Compile Include="deepfind\diagram_rawdata.cs" />
+    <Compile Include="deepfind\uid_like_info.cs" />
     <Compile Include="global_config.cs" />
     <Compile Include="merge.cs" />
     <Compile Include="merge_op\account_tblop.cs" />
@@ -101,6 +106,7 @@
     <Compile Include="merge_op\simpleone_tblop.cs" />
     <Compile Include="merge_op\target_dbop.cs" />
     <Compile Include="merge_op\rename_avatar.cs" />
+    <Compile Include="SingleColumnInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="safeformat.cs" />

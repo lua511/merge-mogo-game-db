@@ -102,9 +102,11 @@ namespace fetchdb.cmd_wraper
             {
                 txt = safeformat.format(@"select {0} from {1}.{2} where {3}", reader.sql_select, db_name, table_name, reader.sql_where);
             }
-            var cmd = current_conn.prepare_read_cmd(txt);
-            reader.update(cmd);
-            current_conn.execute_read(cmd, reader.load);
+            using (var cmd = current_conn.prepare_read_cmd(txt))
+            {
+                reader.update(cmd);
+                current_conn.execute_read(cmd, reader.load);
+            }
         }
 
         // 8. update record

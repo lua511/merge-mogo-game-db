@@ -16,29 +16,31 @@ namespace fetchdb.cpe_wraper
 {
     class blobstring_loader
     {
-        public string Load(MySql.Data.MySqlClient.MySqlDataReader myData,int my_idx)
+        public string Load(MySql.Data.MySqlClient.MySqlDataReader myData, int my_idx)
         {
             int buff_len = 4096;
-            var mem = new System.IO.MemoryStream();
-            var buff = new byte[buff_len];
-            int offset = 0;
-            int readBytes = 0;
-
-            while ((readBytes = (int)myData.GetBytes(my_idx, offset, buff, 0, buff_len)) > 0)
+            using (var mem = new System.IO.MemoryStream())
             {
-                mem.Write(buff, 0, readBytes);
-                if (readBytes < buff_len)
+                var buff = new byte[buff_len];
+                int offset = 0;
+                int readBytes = 0;
+
+                while ((readBytes = (int)myData.GetBytes(my_idx, offset, buff, 0, buff_len)) > 0)
                 {
-                    break;
+                    mem.Write(buff, 0, readBytes);
+                    if (readBytes < buff_len)
+                    {
+                        break;
+                    }
+                    offset += readBytes;
                 }
-                offset = readBytes;
-            }
-            mem.Position = 0;
-            using (var sr = new System.IO.StreamReader(mem, Encoding.UTF8))
-            {
-                var line = sr.ReadToEnd();
+                mem.Position = 0;
+                using (var sr = new System.IO.StreamReader(mem, Encoding.UTF8))
+                {
+                    var line = sr.ReadToEnd();
 
-                return line;
+                    return line;
+                }
             }
         }
     }
