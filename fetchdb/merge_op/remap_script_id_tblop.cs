@@ -132,8 +132,8 @@ namespace fetchdb.merge_op
                             var serverinfo = p.serverid;
                             var m4 = get_dbid_by_fakekey(m3, serverinfo);
 
-                            secondinfo = secondinfo.Replace(m3.ToString(), m4.ToString());
-                            oldinfo = oldinfo.Replace(m.Value, secondinfo);
+                            var  replaced_info = secondinfo.Replace(m3.ToString(), m4.ToString());
+                            oldinfo = oldinfo.Replace(secondinfo, replaced_info);
                         }
                         p.new_info = oldinfo;
                     }

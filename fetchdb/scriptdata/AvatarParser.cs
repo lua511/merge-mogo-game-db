@@ -59,11 +59,11 @@ namespace fetchdb.scriptdata
         {
             if (level > other.level)
             {
-                return 1;
+                return -1;
             }
             if (level < other.level)
             {
-                return -1;
+                return 1;
             }
             return 0;
         }

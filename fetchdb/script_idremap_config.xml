@@ -11,6 +11,6 @@
   </Avatar>
   <Avatar>
     <column>friends</column>
-    <pattern exact="\d{10,20}">\d{10,20}=\{1=</pattern>
+    <pattern exact="\d{10,20}">\d{10,20}=\{\d=\d</pattern>
   </Avatar>
 </root>
