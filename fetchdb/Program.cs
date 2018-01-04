@@ -46,6 +46,9 @@ namespace fetchdb
                     Console.WriteLine("menu:");
                     Console.WriteLine("  1: merge source dbs");
                     Console.WriteLine("  2: deep find all ids");
+                    Console.WriteLine("  3: clean local disk cache files");
+                    var watch = new System.Diagnostics.Stopwatch();
+                    watch.Start();
                     opt_str = Console.ReadLine().Trim().ToLower();
                     switch(opt_str)
                     {
@@ -55,7 +58,12 @@ namespace fetchdb
                         case "2":
                             new deepfind.check().main(wspace);
                             break;
+                        case "3":
+                            new cleanup.cleaner().main(wspace);
+                            break;
                     }
+                    watch.Stop();
+                    Console.WriteLine(watch.ElapsedMilliseconds / 1000 + " seconds used");
                     Console.WriteLine("hit any key to exit");
                     Console.ReadKey();
                 }

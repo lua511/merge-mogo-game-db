@@ -119,10 +119,6 @@ namespace fetchdb.merge_op
                         var p1 = pattern.Key;
                         var p2 = pattern.Value;
                         var matches = System.Text.RegularExpressions.Regex.Matches(p.new_info, p1);
-                        if(matches.Count > 1)
-                        {
-                            throw new Exception("too complex match,try a special method");
-                        }
 
                         foreach (System.Text.RegularExpressions.Match m in matches)
                         {

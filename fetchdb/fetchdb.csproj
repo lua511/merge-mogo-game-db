@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="cachedata.cs" />
+    <Compile Include="cleanup\cleaner.cs" />
     <Compile Include="cog_wraper\blobdata_reader.cs" />
     <Compile Include="deepfind\check.cs" />
     <Compile Include="cog_wraper\account_avatarsinfo_batch_writer.cs" />
