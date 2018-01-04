@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+  <ArenaData>
+    <element>avatarDbid</element>
+    <element>enemy</element>
+    <element>candidateEnemy</element>
+  </ArenaData>
+  <mail_blob>
+    <element>avatarDbid</element>
+  </mail_blob>
+  <mail_private>
+    <element>avatarDbid</element>
+  </mail_private>
+  <RankDataDiamond>
+    <element>avatarDbid</element>
+  </RankDataDiamond>
+  <RankDataStar>
+    <element>avatarDbid</element>
+  </RankDataStar>
+</root>

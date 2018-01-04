@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+  <Avatar>
+    <column>arenicData</column>
+    <pattern exact="\d{10,20}">6=\d{10,20}</pattern>
+    <pattern exact="\d{10,20}">5=\d{10,20}</pattern>
+  </Avatar>
+  <Avatar>
+    <column>idol</column>
+    <pattern exact="\d{10,20}">1=\d{10,20}</pattern>
+  </Avatar>
+  <Avatar>
+    <column>friends</column>
+    <pattern exact="\d{10,20}">\d{10,20}=\{\d=\d</pattern>
+  </Avatar>
+</root>
