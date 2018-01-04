@@ -81,7 +81,7 @@ namespace fetchdb.deepfind
                 }
                 else
                 {
-                    var matches = System.Text.RegularExpressions.Regex.Matches(v.str_value, @"\d{10,20}");
+                    var matches = System.Text.RegularExpressions.Regex.Matches(v.str_value, @"4\d{9}");  // 4 is enough here ,be care in your case
                     if(matches.Count > 0)
                     {
                         matched_data.Add(v);
